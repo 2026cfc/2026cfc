@@ -597,27 +597,45 @@
         
         let seatCol = 1;
         
-        for(let displayCol = 1; displayCol <= 29; displayCol++) {
-          // 通路判定
-          const isAisle1 = (displayCol === 10);  // 9-10間通路
-          const isAisle2 = (displayCol === 20);  // 18-19間通路  
-          
-          // J列終了後の横通路（k列開始前）
-          const isHorizontalAisle = (row === 'J' && displayCol === 28);
-          
-          if (isAisle1 || isAisle2 || isHorizontalAisle) {
-            const aisleSpace = document.createElement('div');
-            aisleSpace.className = 'aisle-space';
-            rowGroup.appendChild(aisleSpace);
-          } else {
-            const seatId = row + '-' + seatCol;
-            const seat = document.createElement('div');
-            seat.className = 'seat';
-            
-            const seatData = seatingData.find(s => s.seat === seatId);
-            if (seatData) {
-              seat.innerHTML = `
-                <div class="seat-name">${seatData.store}</div>
-                <div class="seat-id">${seatId}</div>
-              `;
-              seat
+        for (let displayCol = 1; displayCol <= 30; displayCol++) {
+  // 縦通路：9-10番の間と18-19番の間
+  const isAisle1 = (displayCol === 10);  // 9と10の間
+  const isAisle2 = (displayCol === 20);  // 18と19の間
+
+  // 横通路：J列のあと（k列の前）に入れる
+  const isHorizontalAisle = (row === 'J' && displayCol === 30);
+
+  if (isAisle1 || isAisle2 || isHorizontalAisle) {
+    // 通路スペース（透明な四角）
+    const aisleSpace = document.createElement('div');
+    aisleSpace.className = 'aisle-space';
+    rowGroup.appendChild(aisleSpace);
+  } else {
+    // 席の作成
+    const seatId = row + '-' + seatCol;
+    const seat = document.createElement('div');
+    seat.className = 'seat';
+
+    const seatData = seatingData.find(s => s.seat === seatId);
+    if (seatData) {
+      seat.innerHTML = `
+        <div class="seat-name">${seatData.store}</div>
+        <div class="seat-id">${seatId}</div>
+      `;
+      seat.dataset.store = seatData.store;
+      seat.onclick = () => {
+        navigator.vibrate?.(100);
+        alert(`${seatData.store}\n席番号：${seatId}`);
+      };
+    } else {
+      // データがない席も座席番号だけ表示
+      seat.innerHTML = `<div class="seat-id">${seatId}</div>`;
+      seat.dataset.store = '';
+      seat.style.opacity = '0.4';
+    }
+    seat.dataset.seatId = seatId;
+    rowGroup.appendChild(seat);
+    seatCol++; // 席番号だけを進める（通路では進めない）
+  }
+}
+
