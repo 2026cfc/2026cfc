@@ -57,6 +57,13 @@
       align-items: center;
     }
     
+    /* 通路スペース（席と同じ幅・透明） */
+    .aisle-space {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+    }
+    
     .seat { 
       background: rgba(255,255,255,0.92); 
       width: 52px; 
@@ -74,14 +81,7 @@
       border: 2px solid transparent;
     }
     
-    .aisle {
-      background: linear-gradient(90deg, #e0e0e0, #f5f5f5) !important;
-      border: 2px dashed #ccc !important;
-      cursor: default !important;
-      opacity: 0.7;
-    }
-    
-    .seat:hover:not(.aisle) { 
+    .seat:hover { 
       transform: scale(1.08); 
       box-shadow: 0 6px 20px rgba(0,0,0,0.25);
     }
@@ -113,11 +113,6 @@
       font-size: 7px; 
       opacity: 0.8;
     }
-    .aisle-label {
-      font-size: 8px;
-      color: #666;
-      font-weight: normal;
-    }
     
     .loading { 
       text-align: center; 
@@ -132,9 +127,9 @@
     
     @media (max-width: 480px) { 
       body { padding: 10px; }
-      .seat, .aisle { width: 48px; height: 48px; }
+      .seat, .aisle-space { width: 48px; height: 48px; }
       .seat-name { font-size: 7.5px; }
-      .seat-id, .aisle-label { font-size: 6.5px; }
+      .seat-id { font-size: 6.5px; }
       .row-group { gap: 3px; margin-bottom: 6px; }
     }
   </style>
@@ -147,7 +142,7 @@
   
   <div class="instructions">
     📱 <strong>店舗名を入力</strong>すると該当席が<strong>黄色で点滅</strong><br>
-    横スワイプで席を確認（灰色＝通路）
+    横スワイプで席を確認（隙間＝通路）
   </div>
   
   <input type="text" class="search-box" id="searchInput" 
@@ -546,20 +541,23 @@
         const rowGroup = document.createElement('div');
         rowGroup.className = 'row-group';
         
-        for(let col = 1; col <= 28; col++) { // 28列（通路分含む）
-          // 通路位置判定
-          const isAisle = (col === 10 || col === 19 || (row === 'J' && col === 28));
+        // 席番号カウンタ（通路スキップ）
+        let seatCol = 1;
+        
+        for(let displayCol = 1; displayCol <= 29; displayCol++) { 
+          // 通路判定（9-10間、18-19間、J-K間）
+          const isAisle1 = (displayCol === 10);      // 9-10間
+          const isAisle2 = (displayCol === 19);      // 18-19間  
+          const isAisle3 = (row === 'J' && displayCol === 28); // J-K間
           
-          if (isAisle) {
-            // 通路作成
-            const aisle = document.createElement('div');
-            aisle.className = 'seat aisle';
-            aisle.innerHTML = '<div class="aisle-label">通路</div>';
-            aisle.dataset.store = '';
-            rowGroup.appendChild(aisle);
+          if (isAisle1 || isAisle2 || isAisle3) {
+            // 通路スペース（透明・席幅）
+            const aisleSpace = document.createElement('div');
+            aisleSpace.className = 'aisle-space';
+            rowGroup.appendChild(aisleSpace);
           } else {
-            // 席作成
-            const seatId = row + '-' + (col > 19 ? col-1 : col > 10 ? col-1 : col);
+            // 席
+            const seatId = row + '-' + seatCol;
             const seat = document.createElement('div');
             seat.className = 'seat';
             
@@ -581,6 +579,7 @@
             }
             seat.dataset.seatId = seatId;
             rowGroup.appendChild(seat);
+            seatCol++; // 席番号進める
           }
         }
         container.appendChild(rowGroup);
