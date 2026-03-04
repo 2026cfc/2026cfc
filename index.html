@@ -2,104 +2,129 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>2026全国大会 席次検索</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
       font-family: system-ui, -apple-system, sans-serif; 
-      max-width: 1400px; margin: 0 auto; padding: 20px; 
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
+      padding: 15px;
     }
     .header { 
       text-align: center; 
       color: white; 
-      margin-bottom: 30px; 
+      margin-bottom: 25px; 
       text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
     .search-box { 
       width: 100%; 
-      padding: 20px 25px; 
-      font-size: 20px; 
+      padding: 18px 20px; 
+      font-size: 18px; 
       border: none; 
       border-radius: 15px; 
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-      margin-bottom: 25px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+      background: rgba(255,255,255,0.95);
     }
     .instructions { 
-      background: rgba(255,255,255,0.95); 
-      padding: 20px; 
-      border-radius: 15px; 
-      margin-bottom: 30px; 
+      background: rgba(255,255,255,0.9); 
+      padding: 15px; 
+      border-radius: 12px; 
+      margin-bottom: 20px; 
       text-align: center;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      font-size: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     }
     .seating-table { 
       display: grid; 
-      grid-template-columns: repeat(27, 1fr); 
-      gap: 3px; 
-      background: rgba(255,255,255,0.1); 
-      padding: 25px;
+      grid-template-columns: repeat(auto-fit, minmax(48px, 1fr)); 
+      gap: 4px; 
+      background: rgba(255,255,255,0.15); 
+      padding: 20px;
       border-radius: 20px;
       backdrop-filter: blur(10px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+      max-width: 100%;
+      overflow-x: auto;
     }
     .seat { 
-      background: rgba(255,255,255,0.9); 
-      padding: 12px 8px; 
-      text-align: center; 
-      min-height: 65px; 
-      font-size: 11px; 
+      background: rgba(255,255,255,0.92); 
+      /* 正方形に固定 */
+      width: 52px; 
+      height: 52px; 
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 9px; 
       font-weight: 600;
-      border-radius: 10px; 
-      transition: all 0.3s ease; 
+      border-radius: 8px; 
+      transition: all 0.25s ease; 
       cursor: pointer;
       position: relative;
-      overflow: hidden;
+      border: 2px solid transparent;
     }
     .seat:hover { 
-      transform: translateY(-2px); 
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transform: scale(1.08); 
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
     }
     .highlight { 
       background: linear-gradient(45deg, #ffeb3b, #ff9800) !important; 
-      box-shadow: 0 0 30px rgba(255,235,59,0.9) !important;
-      transform: scale(1.1) !important;
-      animation: pulse 1s infinite;
-      border: 3px solid #f57c00;
+      box-shadow: 0 0 25px rgba(255,235,59,0.9) !important;
+      transform: scale(1.15) !important;
+      animation: pulse 0.8s infinite;
+      border-color: #f57c00 !important;
     }
     @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 30px rgba(255,235,59,0.9); }
-      50% { box-shadow: 0 0 40px rgba(255,235,59,1); }
+      0%, 100% { box-shadow: 0 0 25px rgba(255,235,59,0.9); }
+      50% { box-shadow: 0 0 35px rgba(255,235,59,1); }
+    }
+    .seat-name { 
+      font-size: 8px; 
+      line-height: 1.1; 
+      max-width: 44px;
+      word-break: break-all;
+      margin-bottom: 1px;
+    }
+    .seat-id { 
+      font-size: 7px; 
+      opacity: 0.8;
     }
     .loading { 
       text-align: center; 
-      padding: 60px 20px; 
-      font-size: 18px; 
+      padding: 50px 15px; 
+      font-size: 16px; 
       color: white; 
       background: rgba(255,255,255,0.2);
       border-radius: 15px;
       backdrop-filter: blur(10px);
+      margin: 20px 0;
     }
-    @media (max-width: 768px) { 
-      .seating-table { grid-template-columns: repeat(14, 1fr); gap: 2px; padding: 15px; }
-      .seat { font-size: 9px; min-height: 50px; padding: 8px 4px; }
+    /* スマホ最適化 */
+    @media (max-width: 480px) { 
+      body { padding: 10px; }
+      .seat { width: 46px; height: 46px; font-size: 8px; }
+      .seat-name { font-size: 7px; }
+      .seat-id { font-size: 6.5px; }
+      .seating-table { gap: 3px; padding: 15px; }
     }
   </style>
 </head>
 <body>
   <div class="header">
-    <h1 style="font-size: 2.5em; margin-bottom: 10px;">🏛️ 2026全国大会</h1>
-    <h2 style="font-size: 1.5em;">席次検索アプリ</h2>
+    <h1 style="font-size: 2.2em; margin-bottom: 5px;">🏛️ 2026全国大会</h1>
+    <h2 style="font-size: 1.3em;">席次検索</h2>
   </div>
   
   <div class="instructions">
-    📱 <strong>店舗名を入力</strong>すると該当席が<strong>黄色で点滅</strong>します<br>
-    例：「岡崎店」「本社」「掛川店」「仙台東店」
+    📱 <strong>店舗名を入力</strong>すると該当席が<strong>黄色で点滅</strong><br>
+    例：「岡崎店」「本社」「掛川店」
   </div>
   
   <input type="text" class="search-box" id="searchInput" 
-         placeholder="店舗名を入力（例：岡崎店、本社、掛川店）"
+         placeholder="店舗名を入力（例：岡崎店、本社）"
          autocomplete="off">
   
   <div id="loading" class="loading">
@@ -108,9 +133,9 @@
   <div id="seatingTable" class="seating-table" style="display:none;"></div>
 
   <script>
-    // ★★★ ここに席次データを入力 ★★★
-const seatingData = [
- {"seat":"A-1","store":"岡崎店"},
+    // ★★★ あなたの席次データ ★★★
+    const seatingData = [
+     {"seat":"A-1","store":"岡崎店"},
 {"seat":"A-2","store":"岡崎店"},
 {"seat":"A-3","store":"岡崎店"},
 {"seat":"A-4","store":"仙台東店"},
@@ -462,15 +487,12 @@ const seatingData = [
 {"seat":"o-25","store":"関係者席"},
 {"seat":"o-26","store":"関係者席"},
 {"seat":"o-27","store":"関係者席"},
-];
-
+    ];
     
-    // ページ読み込み時に席次表表示
     window.onload = function() {
       displaySeating();
     };
     
-    // 検索機能
     document.getElementById('searchInput').addEventListener('input', function() {
       const query = this.value.toLowerCase().trim();
       document.querySelectorAll('.seat').forEach(seat => {
@@ -487,7 +509,6 @@ const seatingData = [
       });
     });
     
-    // 席次表描画
     function displaySeating() {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('seatingTable').style.display = 'grid';
@@ -501,22 +522,23 @@ const seatingData = [
           const seat = document.createElement('div');
           seat.className = 'seat';
           
-          // 席データ取得
           const seatData = seatingData.find(s => s.seat === seatId);
           if (seatData) {
             seat.innerHTML = `
-              <div>${seatData.store}</div>
-              <small>${seatId}</small>
+              <div class="seat-name">${seatData.store}</div>
+              <div class="seat-id">${seatId}</div>
             `;
             seat.dataset.store = seatData.store;
-            seat.onclick = () => alert(`${seatData.store}\n席番号：${seatId}`);
+            seat.onclick = () => {
+              navigator.vibrate?.(100); // スマホ振動
+              alert(`${seatData.store}\n席番号：${seatId}`);
+            };
           } else {
-            seat.innerHTML = `<small>${seatId}</small>`;
+            seat.innerHTML = `<div class="seat-id">${seatId}</div>`;
             seat.dataset.store = '';
-            seat.onclick = () => alert(`空席または通路\n${seatId}`);
+            seat.style.opacity = '0.4';
           }
           seat.dataset.seatId = seatId;
-          
           table.appendChild(seat);
         }
       });
