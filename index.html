@@ -547,7 +547,7 @@
         for(let displayCol = 1; displayCol <= 29; displayCol++) { 
           // 通路判定（9-10間、18-19間、J-K間）
           const isAisle1 = (displayCol === 10);      // 9-10間
-          const isAisle2 = (displayCol === 19);      // 18-19間  
+          const isAisle2 = (displayCol === 20);      // 18-19間  
           const isAisle3 = (row === 'J' && displayCol === 28); // J-K間
           
           if (isAisle1 || isAisle2 || isAisle3) {
